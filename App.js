@@ -30,22 +30,22 @@ function HomeScreen({ navigation }) {
       <View style={styles.content}>
         <Text style={styles.title}>Habit Tracker</Text>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity 
-            style={styles.button} 
+          <TouchableOpacity
+            style={styles.button}
             onPress={() => navigation.navigate('AddHabit')}
           >
             <Text style={styles.buttonText}>Start Tracking a Habit</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={[styles.button, styles.quitButton]} 
+          <TouchableOpacity
+            style={[styles.button, styles.quitButton]}
             onPress={() => console.log("Start quitting pressed")}
           >
             <Text style={styles.buttonText}>Start Quitting a Habit</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={[styles.button, styles.quitButton]} 
+
+          <TouchableOpacity
+            style={[styles.button, styles.quitButton]}
             onPress={() => navigation.navigate('ViewHabits')}
           >
             <Text style={styles.buttonText}>Check my habits</Text>
@@ -80,13 +80,13 @@ function AddHabitScreen({ navigation }) {
       // Get existing habits
       const existingHabits = await AsyncStorage.getItem('habits');
       const habits = existingHabits ? JSON.parse(existingHabits) : [];
-      
+
       // Add new habit
       habits.push(newHabit);
-      
+
       // Save updated habits
       await AsyncStorage.setItem('habits', JSON.stringify(habits));
-      
+
       Alert.alert('Success', 'Habit saved successfully!');
       navigation.navigate('ViewHabits');
     } catch (error) {
@@ -149,7 +149,7 @@ function ViewHabitsScreen() {
         }
         return habit;
       });
-      
+
       await AsyncStorage.setItem('habits', JSON.stringify(updatedHabits));
       setHabits(updatedHabits);
     } catch (error) {
@@ -157,22 +157,81 @@ function ViewHabitsScreen() {
     }
   };
 
+  const decrementCount = async (habitId) => {
+    try {
+      const updatedHabits = habits.map(habit => {
+        if (habit.id === habitId && habit.count > 0) {
+          return { ...habit, count: habit.count - 1 };
+        }
+        return habit;
+      });
+
+      await AsyncStorage.setItem('habits', JSON.stringify(updatedHabits));
+      setHabits(updatedHabits);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to update habit count');
+    }
+  };
+
+  const deleteHabit = async (habitId) => {
+    Alert.alert(
+      "Delete Habit",
+      "Are you sure you want to delete this habit?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const updatedHabits = habits.filter(habit => habit.id !== habitId);
+              await AsyncStorage.setItem('habits', JSON.stringify(updatedHabits));
+              setHabits(updatedHabits);
+            } catch (error) {
+              Alert.alert('Error', 'Failed to delete habit');
+            }
+          }
+        }
+      ]
+    );
+  };
+
+
   return (
     <View style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.subtitle}>My Habits</Text>
         {habits.map(habit => (
           <View key={habit.id} style={styles.habitCard}>
-            <Text style={styles.habitTitle}>{habit.title}</Text>
+            <View style={styles.habitHeader}>
+              <Text style={styles.habitTitle}>{habit.title}</Text>
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => deleteHabit(habit.id)}
+              >
+                <Text style={styles.deleteButtonText}>×</Text>
+              </TouchableOpacity>
+            </View>
             <Text style={styles.habitDescription}>{habit.description}</Text>
             <View style={styles.countContainer}>
               <Text style={styles.countText}>Days: {habit.count}</Text>
-              <TouchableOpacity 
-                style={styles.incrementButton}
-                onPress={() => incrementCount(habit.id)}
-              >
-                <Text style={styles.buttonText}>+</Text>
-              </TouchableOpacity>
+              <View style={styles.counterButtons}>
+                <TouchableOpacity
+                  style={styles.decrementButton}
+                  onPress={() => decrementCount(habit.id)}
+                >
+                  <Text style={styles.buttonText}>-</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.incrementButton}
+                  onPress={() => incrementCount(habit.id)}
+                >
+                  <Text style={styles.buttonText}>+</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         ))}
@@ -254,7 +313,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   habitTitle: {
-    fontSize: 18,
+    fontSize: 25,
     fontWeight: 'bold',
     marginBottom: 5,
   },
@@ -280,4 +339,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  habitHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  deleteButton: {
+    padding: 5,
+  },
+  deleteButtonText: {
+    color: '#ff4444',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  counterButtons: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  decrementButton: {
+    backgroundColor: '#ff4444',
+    padding: 10,
+    borderRadius: 5,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
 });
