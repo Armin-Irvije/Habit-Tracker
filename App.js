@@ -19,6 +19,8 @@ const Stack = createStackNavigator();
 
 //TODO: no need for mutiple screen components for habit creation, when creating a habit you just click which type of habit it is 
 //TODO: file is too many line split up this file 
+//TODO: days and time kept should be larger font!!
+//Titles are lame make them more cooler
 
 // Home Screen Component
 function HomeScreen({ navigation }) {
@@ -31,28 +33,21 @@ function HomeScreen({ navigation }) {
             style={styles.button}
             onPress={() => navigation.navigate('AddHabit')}
           >
-            <Text style={styles.buttonText}>Start Tracking a Habit</Text>
+            <Text style={styles.buttonText}>Create New Habit</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.button, styles.quitButton]}
-            onPress={() => navigation.navigate('AddQuittingHabit')}
-          >
-            <Text style={styles.buttonText}>Start Quitting a Habit</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.button, styles.quitButton]}
+            style={[styles.button, styles.viewButton]}
             onPress={() => navigation.navigate('ViewHabits')}
           >
-            <Text style={styles.buttonText}>Check my habits</Text>
+            <Text style={styles.buttonText}>Check my "I will" habits</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.button, styles.quitButton]}
+            style={[styles.button, styles.viewButton]}
             onPress={() => navigation.navigate('ViewQuittingHabits')}
           >
-            <Text style={styles.buttonText}>Check my quitting habits</Text>
+            <Text style={styles.buttonText}>Check my "I won't" habits</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -61,10 +56,11 @@ function HomeScreen({ navigation }) {
   );
 }
 
-// Add Habit Screen Component
+// Combined Add Habit Screen Component
 function AddHabitScreen({ navigation }) {
-  const [title, setTitle] = React.useState('');
-  const [description, setDescription] = React.useState('');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [habitType, setHabitType] = useState(null);
 
   const saveHabit = async () => {
     if (!title.trim()) {
@@ -72,27 +68,67 @@ function AddHabitScreen({ navigation }) {
       return;
     }
 
+    if (!habitType) {
+      Alert.alert('Error', 'Please select a habit type');
+      return;
+    }
+
     try {
-      const newHabit = {
-        id: Date.now().toString(),
-        title,
-        description,
-        count: 0,
-        dateCreated: new Date().toISOString(),
-      };
+      if (habitType === 'will') {
+        const newHabit = {
+          id: Date.now().toString(),
+          title,
+          description,
+          count: 0,
+          dateCreated: new Date().toISOString(),
+        };
 
-      // Get existing habits
-      const existingHabits = await AsyncStorage.getItem('habits');
-      const habits = existingHabits ? JSON.parse(existingHabits) : [];
-
-      // Add new habit
+        const existingHabits = await AsyncStorage.getItem('habits');
+        const habits = existingHabits ? JSON.parse(existingHabits) : [];
+      habits.push(newHabit);
       habits.push(newHabit);
 
       // Save updated habits
+        habits.push(newHabit);
+
+      // Save updated habits
+      await AsyncStorage.setItem('habits', JSON.stringify(habits));
       await AsyncStorage.setItem('habits', JSON.stringify(habits));
 
       Alert.alert('Success', 'Habit saved successfully!');
-      navigation.navigate('ViewHabits');
+        await AsyncStorage.setItem('habits', JSON.stringify(habits));
+
+      Alert.alert('Success', 'Habit saved successfully!');
+        navigation.navigate('ViewHabits');
+      } else {
+        const newQuittingHabit = {
+          id: Date.now().toString(),
+          title,
+          description,
+          startTime: new Date().toISOString(),
+          lastRelapseTime: null,
+        };
+
+        const existingQuittingHabits = await AsyncStorage.getItem('quittingHabits');
+        const quittingHabits = existingQuittingHabits ? JSON.parse(existingQuittingHabits) : [];
+      quittingHabits.push(newQuittingHabit);
+      quittingHabits.push(newQuittingHabit);
+      
+      // Save updated quitting habits
+        quittingHabits.push(newQuittingHabit);
+      
+      // Save updated quitting habits
+      await AsyncStorage.setItem('quittingHabits', JSON.stringify(quittingHabits));
+      await AsyncStorage.setItem('quittingHabits', JSON.stringify(quittingHabits));
+      
+      Alert.alert('Success', 'Quitting habit saved successfully!');
+        await AsyncStorage.setItem('quittingHabits', JSON.stringify(quittingHabits));
+      
+      Alert.alert('Success', 'Quitting habit saved successfully!');
+        navigation.navigate('ViewQuittingHabits');
+      }
+
+      Alert.alert('Success', 'Habit saved successfully!');
     } catch (error) {
       Alert.alert('Error', 'Failed to save habit');
     }
@@ -102,6 +138,32 @@ function AddHabitScreen({ navigation }) {
     <View style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.subtitle}>New Habit</Text>
+        <View style={styles.typeSelection}>
+          <TouchableOpacity
+            style={[
+              styles.typeButton,
+              habitType === 'will' && styles.selectedTypeButton
+            ]}
+            onPress={() => setHabitType('will')}
+          >
+            <Text style={[
+              styles.typeButtonText,
+              habitType === 'will' && styles.selectedTypeButtonText
+            ]}>I will</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.typeButton,
+              habitType === 'wont' && styles.selectedTypeButton
+            ]}
+            onPress={() => setHabitType('wont')}
+          >
+            <Text style={[
+              styles.typeButtonText,
+              habitType === 'wont' && styles.selectedTypeButtonText
+            ]}>I won't</Text>
+          </TouchableOpacity>
+        </View>
         <TextInput
           style={styles.input}
           placeholder="Habit Title"
@@ -118,7 +180,11 @@ function AddHabitScreen({ navigation }) {
           multiline
           numberOfLines={4}
         />
-        <TouchableOpacity style={styles.button} onPress={saveHabit}>
+        <TouchableOpacity 
+          style={[styles.button, !habitType && styles.disabledButton]} 
+          onPress={saveHabit}
+          disabled={!habitType}
+        >
           <Text style={styles.buttonText}>Save Habit</Text>
         </TouchableOpacity>
       </View>
@@ -126,70 +192,8 @@ function AddHabitScreen({ navigation }) {
   );
 }
 
-// Add Quitting Habit Screen Component
-function AddQuittingHabitScreen({ navigation }) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
 
-  const saveQuittingHabit = async () => {
-    if (!title.trim()) {
-      Alert.alert('Error', 'Please enter a habit title');
-      return;
-    }
 
-    try {
-      const newQuittingHabit = {
-        id: Date.now().toString(),
-        title,
-        description,
-        startTime: new Date().toISOString(),
-        lastRelapseTime: null,
-      };
-
-      // Get existing quitting habits
-      const existingQuittingHabits = await AsyncStorage.getItem('quittingHabits');
-      const quittingHabits = existingQuittingHabits ? JSON.parse(existingQuittingHabits) : [];
-      
-      // Add new quitting habit
-      quittingHabits.push(newQuittingHabit);
-      
-      // Save updated quitting habits
-      await AsyncStorage.setItem('quittingHabits', JSON.stringify(quittingHabits));
-      
-      Alert.alert('Success', 'Quitting habit saved successfully!');
-      navigation.navigate('ViewQuittingHabits');
-    } catch (error) {
-      Alert.alert('Error', 'Failed to save quitting habit');
-    }
-  };
-
-  return (
-    <View style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.subtitle}>New Quitting Habit</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Habit Title"
-          placeholderTextColor="#666"
-          value={title}
-          onChangeText={setTitle}
-        />
-        <TextInput
-          style={[styles.input, styles.textArea]}
-          placeholder="Description (optional)"
-          placeholderTextColor="#666"
-          value={description}
-          onChangeText={setDescription}
-          multiline
-          numberOfLines={4}
-        />
-        <TouchableOpacity style={styles.button} onPress={saveQuittingHabit}>
-          <Text style={styles.buttonText}>Save Quitting Habit</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-}
 
 
 // View Quitting Habits Screen Component
@@ -309,14 +313,14 @@ function ViewQuittingHabitsScreen({ navigation }) {
             </View>
             <Text style={styles.habitDescription}>{habit.description}</Text>
             <View style={styles.countContainer}>
-              <Text style={styles.countText}>
-                Time Quit: {calculateTimeDifference(habit.startTime, habit.lastRelapseTime)} Days
+              <Text style={styles.timeText}>
+                Time Quit: {calculateTimeDifference(habit.startTime, habit.lastRelapseTime)}
               </Text>
               <TouchableOpacity
                 style={styles.relapseButton}
                 onPress={() => relapse(habit.id)}
               >
-                <Text style={styles.buttonText}>I Relapsed</Text>
+                <Text style={styles.relapseText}>I Relapsed</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -451,9 +455,8 @@ export default function App() {
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
         <Stack.Screen name="AddHabit" component={AddHabitScreen} options={{ title: 'Add New Habit' }} />
-        <Stack.Screen name="ViewHabits" component={ViewHabitsScreen} options={{ title: 'My Habits' }} />
-        <Stack.Screen name="AddQuittingHabit" component={AddQuittingHabitScreen} options={{ title: 'Add Quitting Habit' }} />
-        <Stack.Screen name="ViewQuittingHabits" component={ViewQuittingHabitsScreen} options={{ title: 'My Quitting Habits' }} />
+        <Stack.Screen name="ViewHabits" component={ViewHabitsScreen} options={{ title: 'My "I will" Habits' }} />
+        <Stack.Screen name="ViewQuittingHabits" component={ViewQuittingHabitsScreen} options={{ title: 'My "I will not" Habits' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -533,7 +536,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   countText: {
-    fontSize: 16,
+    fontSize: 20,
+    fontWeight: '600',
+  },
+  timeText:{
+    fontSize: 20,
     fontWeight: '600',
   },
   incrementButton: {
@@ -574,10 +581,43 @@ const styles = StyleSheet.create({
   },
   relapseButton: {
     backgroundColor: '#ff4444',
-    padding: 10,
+    padding: 5,
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  relapseText:{
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  typeSelection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 20,
+  },
+  typeButton: {
+    flex: 1,
+    padding: 15,
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    marginHorizontal: 5,
+    alignItems: 'center',
+  },
+  selectedTypeButton: {
+    backgroundColor: '#4B4E6D',
+  },
+  typeButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#4B4E6D',
+  },
+  selectedTypeButtonText: {
+    color: '#fff',
+  },
+  disabledButton: {
+    opacity: 0.5,
   },
 
 });
