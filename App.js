@@ -1,8 +1,9 @@
 import 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { Feather } from '@expo/vector-icons';
 import {
   StyleSheet,
   Text,
@@ -19,14 +20,47 @@ const Stack = createStackNavigator();
 
 //TODO: file is too many line split up this file 
 //TODO: change color scheam, better look buttons, include logo and custom art
-//TODO: notifications to remind user about I will habits everyday?
+//TODO: notifications to remind user about I will habits
 
-// Home Screen Component
+// Modified Home Screen Component with Adat Header
 function HomeScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Habit Tracker</Text>
+        {/* Adat Header */}
+        <View style={styles.adatHeader}>
+          <View style={styles.logoContainer}>
+            <Feather name="octagon" size={32} color="#4B4E6D" />
+            <Text style={styles.logoText}>Adat</Text>
+          </View>
+          <Text style={styles.tagline}>Transform your habits, shape your future</Text>
+
+          {/* Motivational Icons */}
+          <View style={styles.iconContainer}>
+            <View style={styles.iconItem}>
+              <Feather name="target" size={24} color="#4B4E6D" />
+              <Text style={styles.iconText}>Focus</Text>
+            </View>
+            <View style={styles.iconItem}>
+              <Feather name="arrow-up-circle" size={24} color="#4B4E6D" />
+              <Text style={styles.iconText}>Growth</Text>
+            </View>
+            <View style={styles.iconItem}>
+              <Feather name="star" size={24} color="#4B4E6D" />
+              <Text style={styles.iconText}>Progress</Text>
+            </View>
+            <View style={styles.iconItem}>
+              <Feather name="moon" size={24} color="#4B4E6D" />
+              <Text style={styles.iconText}>Balance</Text>
+            </View>
+            <View style={styles.iconItem}>
+              <Feather name="sun" size={24} color="#4B4E6D" />
+              <Text style={styles.iconText}>Energy</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Existing Buttons */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.button}
@@ -107,7 +141,7 @@ function AddHabitScreen({ navigation }) {
     } catch (error) {
       Alert.alert('Error', 'Failed to save habit');
     }
-};
+  };
 
   return (
     <View style={styles.container}>
@@ -155,8 +189,8 @@ function AddHabitScreen({ navigation }) {
           multiline
           numberOfLines={4}
         />
-        <TouchableOpacity 
-          style={[styles.button, !habitType && styles.disabledButton]} 
+        <TouchableOpacity
+          style={[styles.button, !habitType && styles.disabledButton]}
           onPress={saveHabit}
           disabled={!habitType}
         >
@@ -178,7 +212,7 @@ function ViewQuittingHabitsScreen({ navigation }) {
 
   useEffect(() => {
     loadQuittingHabits();
-    
+
     // Update time every second
     const timer = setInterval(() => {
       setCurrentTime(new Date());
@@ -205,7 +239,7 @@ function ViewQuittingHabitsScreen({ navigation }) {
     const days = Math.floor(difference / (1000 * 60 * 60 * 24));
     const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-    
+
 
     return `${days}:${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
   };
@@ -226,14 +260,14 @@ function ViewQuittingHabitsScreen({ navigation }) {
             try {
               const updatedQuittingHabits = quittingHabits.map(habit => {
                 if (habit.id === habitId) {
-                  return { 
-                    ...habit, 
-                    lastRelapseTime: new Date().toISOString() 
+                  return {
+                    ...habit,
+                    lastRelapseTime: new Date().toISOString()
                   };
                 }
                 return habit;
               });
-              
+
               await AsyncStorage.setItem('quittingHabits', JSON.stringify(updatedQuittingHabits));
               setQuittingHabits(updatedQuittingHabits);
             } catch (error) {
@@ -438,6 +472,44 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+
+  // New styles for Adat header
+  adatHeader: {
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 30,
+    marginBottom: 40,
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  logoText: {
+    fontSize: 36,
+    fontWeight: '300',
+    color: '#4B4E6D',
+    marginLeft: 10,
+  },
+  tagline: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 20,
+  },
+  iconContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    paddingHorizontal: 10,
+  },
+  iconItem: {
+    alignItems: 'center',
+  },
+  iconText: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 5,
+  },
   container: {
     flex: 1,
     backgroundColor: '#84DCC6',
@@ -447,7 +519,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 50,
+    paddingTop: 20,
   },
   title: {
     fontSize: 32,
@@ -471,6 +543,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     width: '100%',
+    elevation: 2, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   buttonText: {
     color: 'white',
@@ -514,7 +594,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
   },
-  timeText:{
+  timeText: {
     fontSize: 20,
     fontWeight: '600',
   },
@@ -561,7 +641,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  relapseText:{
+  relapseText: {
     color: 'white',
     fontSize: 12,
     fontWeight: '600',
