@@ -17,10 +17,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createStackNavigator();
 
-//TODO: no need for mutiple screen components for habit creation, when creating a habit you just click which type of habit it is 
 //TODO: file is too many line split up this file 
-//TODO: days and time kept should be larger font!!
-//Titles are lame make them more cooler
+//TODO: change color scheam, better look buttons, include logo and custom art
+//TODO: notifications to remind user about I will habits everyday?
 
 // Home Screen Component
 function HomeScreen({ navigation }) {
@@ -85,20 +84,8 @@ function AddHabitScreen({ navigation }) {
 
         const existingHabits = await AsyncStorage.getItem('habits');
         const habits = existingHabits ? JSON.parse(existingHabits) : [];
-      habits.push(newHabit);
-      habits.push(newHabit);
-
-      // Save updated habits
         habits.push(newHabit);
-
-      // Save updated habits
-      await AsyncStorage.setItem('habits', JSON.stringify(habits));
-      await AsyncStorage.setItem('habits', JSON.stringify(habits));
-
-      Alert.alert('Success', 'Habit saved successfully!');
         await AsyncStorage.setItem('habits', JSON.stringify(habits));
-
-      Alert.alert('Success', 'Habit saved successfully!');
         navigation.navigate('ViewHabits');
       } else {
         const newQuittingHabit = {
@@ -111,20 +98,8 @@ function AddHabitScreen({ navigation }) {
 
         const existingQuittingHabits = await AsyncStorage.getItem('quittingHabits');
         const quittingHabits = existingQuittingHabits ? JSON.parse(existingQuittingHabits) : [];
-      quittingHabits.push(newQuittingHabit);
-      quittingHabits.push(newQuittingHabit);
-      
-      // Save updated quitting habits
         quittingHabits.push(newQuittingHabit);
-      
-      // Save updated quitting habits
-      await AsyncStorage.setItem('quittingHabits', JSON.stringify(quittingHabits));
-      await AsyncStorage.setItem('quittingHabits', JSON.stringify(quittingHabits));
-      
-      Alert.alert('Success', 'Quitting habit saved successfully!');
         await AsyncStorage.setItem('quittingHabits', JSON.stringify(quittingHabits));
-      
-      Alert.alert('Success', 'Quitting habit saved successfully!');
         navigation.navigate('ViewQuittingHabits');
       }
 
@@ -132,7 +107,7 @@ function AddHabitScreen({ navigation }) {
     } catch (error) {
       Alert.alert('Error', 'Failed to save habit');
     }
-  };
+};
 
   return (
     <View style={styles.container}>
