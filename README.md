@@ -1,7 +1,8 @@
 # Adat - Habit Tracking App
 
 ## About
-Adat (عادت) - meaning "adapt" in Persian - is a minimalist habit tracking application designed to help users build positive habits and break negative ones. The name represents the adaptable nature of human behavior and our capacity for positive change.
+Adat (عادت) - meaning "adapt" in Persian - is a minimalist habit tracking application designed to help users build positive habits and break negative ones. The name represents the adaptable nature of human behavior and our capacity for positive change.  
+![adat screenshot](assets/adat.jpeg)
 
 ## Features
 - **Dual Habit Tracking**: Track both "I will" (positive) and "I won't" (quitting) habits
