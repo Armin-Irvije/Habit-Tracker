@@ -2,7 +2,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { COLORS } from './styles';
+import { COLORS } from '../styles/styles';
 import { LinearGradient } from 'expo-linear-gradient';
 
 // Define milestone data with enhanced visuals

@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     color: COLORS.deepBlue,
   },
   timeText: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: '600',
     color: COLORS.deepBlue,
   },
@@ -181,6 +181,8 @@ const styles = StyleSheet.create({
   },
   relapseButton: {
     backgroundColor: COLORS.danger,
+    marginTop: 10,
+    width: 100,
     padding: 5,
     borderRadius: 5,
     alignItems: 'center',
