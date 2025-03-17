@@ -38,7 +38,13 @@ function AddHabitScreen({ navigation }) {
   
           const success = await saveHabit(newHabit, 'will');
           if (success) {
-            navigation.navigate('ViewHabits');
+            navigation.reset({
+              index: 1,
+              routes: [
+                {name: 'Home'},
+                {name: 'ViewHabits'}
+              ],
+            });
           }
         } else {
           const newQuittingHabit = {
@@ -52,7 +58,13 @@ function AddHabitScreen({ navigation }) {
   
           const success = await saveHabit(newQuittingHabit, 'wont');
           if (success) {
-            navigation.navigate('ViewQuittingHabits');
+            navigation.reset({
+              index: 1,
+              routes: [
+                {name: 'Home'},
+                {name: 'ViewQuittingHabits'}
+              ],
+            });
           }
         }
   

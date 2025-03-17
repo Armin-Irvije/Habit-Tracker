@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './src/screens/HomeScreen';
 import AddHabitScreen from './src/screens/AddHabitScreen';
-import ViewHabitsScreen from './src/screens/viewHabitsScreen'; //weird casing issue
+import ViewHabitsScreen from './src/screens/ViewHabitsScreen'; //weird casing issue
 import ViewQuittingHabitsScreen from './src/screens/ViewQuittingHabitsScreen';
 
 const Stack = createStackNavigator();
